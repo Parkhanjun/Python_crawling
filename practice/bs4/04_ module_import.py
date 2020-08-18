@@ -1,7 +1,7 @@
 import time
 from multiprocessing import Pool
 # 불필요한 코드 줄이기
-import Python_crawling_example.module.pr_module as mo
+import Python_crawling_example.practice.module.pr_module as mo
 
 def get_stock_value(keyword):
     url = "https://finance.naver.com/item/main.nhn?code=" + keyword
