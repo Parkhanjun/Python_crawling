@@ -1,4 +1,4 @@
-from crawling.dart_api.module import dart_module as dm
+import Python_crawling.dart_api.module.call_company_code as cc
+import Python_crawling.dart_api.module.dart_module as dm
 
-start = dm.open_dart('005930')
-
+dm.open_dart(cc.call_cc())
