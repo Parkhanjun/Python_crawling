@@ -3,6 +3,8 @@ import datetime
 import requests
 import json
 import re
+from bs4 import BeautifulSoup as bs
+from html_table_parser import parser_functions as parser
 
 
 def date():
@@ -22,34 +24,39 @@ def company_code(code):
     type = 'A'  # B , C , D 타입에 따라 결과값 다름,즉 추가코딩 하여야함
     list = []
     for arr in code:
-        url = "https://opendart.fss.or.kr/api/list.json?crtfc_key=" + key + \
-              "&corp_code=" + arr + "&bgn_de=" + begin + "&end_de=" + end + "&pblntf_ty=" + type + "&corp_cls=Y&page_no=1&page_count=10"
+        url = f"https://opendart.fss.or.kr/api/list.json?crtfc_key={key}&corp_code={arr}&bgn_de={begin}" \
+              f"&end_de={end}&pblntf_ty={type}&corp_cls={'Y'}&page_no=1&page_count=10"
         if json.loads(requests.get(url).text)['status'] != '000':
-            url = "https://opendart.fss.or.kr/api/list.json?crtfc_key=" + key + \
-                  "&corp_code=" + arr + "&bgn_de=" + begin + "&end_de=" + end + "&pblntf_ty=" + type + "&corp_cls=K&page_no=1&page_count=10"
+            url = f"https://opendart.fss.or.kr/api/list.json?crtfc_key={key}&corp_code={arr}&bgn_de={begin}" \
+                  f"&end_de={end}&pblntf_ty={type}&corp_cls={'K'}&page_no=1&page_count=10"
         result = requests.get(url).text
         li = json.loads(result)['list']
         for arr in li:
-            list.append(arr['rcept_no'])
+            if arr['rm'] == '연':
+                pass
+            else:
+                list.append(arr['rcept_no'])
+    # print(list)
     return list
 
 
 def open_dart(code):
-    http = ''
-    for item in company_code(code):
-       http = 'http://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + item
-    html = requests.get(http).text
-    split = re.split(r'연결재무제표',html)[1].split(r';')[0].split(r'viewDoc(')[1].split(r',')
-    print(split)
+    ttr = []
+    for it in company_code(code):
+        url = 'http://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + it
+        html = requests.get(url).text
+        split = re.split('연결재무제표', html)[1].split(r');')[0].split(r'viewDoc(')[1].replace("'","").split(', ')
+        rurl = f'http://dart.fss.or.kr/report/viewer.do?rcpNo={split[0]}&dcmNo={split[1]}&eleId={split[2]}&offset={split[3]}&length={split[4]}&dtd={split[5]}'
+        print(rurl)
+        result = bs(requests.get(rurl).content,'html.parser')
+        body = str(result).split('연결 손익계산서')[1]
+        body = bs(body,'html.parser')
+        tr = body.find('table')
+        table = parser.make2d(tr)
+        ttr.append(table)
+    return ttr
 
-    # split값 url 파라미터에 파싱하고 얻은 html에서 재무제표 테이블값을 리턴 시키기
-    # 예외의 상황 발생시 대처할 예외처리들을 코딩하기
-    # 끝
-
-    return split
-
-
-
+# 예외의 상황 발생시 대처할 예외처리들을 코딩하기
 '''
 하다가 방법을 모르겠어서 결국 버려진 셀레니움코드...
 # driver = webdriver.Chrome('chromedriver.exe')

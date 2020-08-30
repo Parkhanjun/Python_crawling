@@ -1,5 +1,7 @@
 import openpyxl as excel
 import pandas as pd
+import numpy as np
+
 
 def call_cc():
     lis = []
@@ -12,17 +14,17 @@ def call_cc():
 
 
 def save_stock_value(open):
-    panda = pd.DataFrame(open)
-    excel_panda = pd.ExcelWriter('C:/Users/safa6/git/python/Python_crawling/dart_api/excel/test.xlsx')
-    panda.to_excel(excel_panda, sheet_name='Sheet1')
-    excel_panda.save()
-    excel_panda.close()
+    list = []
+    for item in open:
+        list.append(item)
+    pan1 = pd.DataFrame(list[0])
+    pan2 = pd.DataFrame(list[1])
+    pc = pd.concat([pan1,pan2], axis=1)
+    panda = pd.DataFrame(pc)
+    panda.to_excel('C:/Users/safa6/git/python/Python_crawling/dart_api/excel/test.xlsx',
+                   sheet_name='Sheet1',
+                   )
 
-    # write = excel.Workbook().active
-    # write.append(open)
-    # Workbook().save('C:/Users/safa6/git/python/Python_crawling/dart_api/excel/test.xlsx')
-    # Workbook().close()
-    return print('끝')
 
 if __name__ == "__main__":
     call_cc()
