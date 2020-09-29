@@ -1,6 +1,7 @@
 import openpyxl as excel
 import pandas as pd
-
+from IPython.display import display
+import os
 
 def call_cc():
     lis = []
@@ -12,13 +13,27 @@ def call_cc():
 
 
 def save_stock_value(open):
-    print(open)
-    file_name = open['a']
-    open.pop('a')
-    pandas = pd.DataFrame(open)
-    pandas.to_excel(f'C:/Users/safa6/git/python/Python_crawling/dart_api/excel/{file_name}.xlsx',
-               sheet_name='Sheet1',
-               )
+    if not open:
+        print('데이타가 없으므로 종료합니다')
+        exit()
+    for item in open:
+        if item.find('a') != -1:
+            folder_name = open[item].split('_')[0]
+            # section = open[item].split('_')[1]
+            file_name = open[item]
+        if item.find('b') != -1:
+            pandas = pd.DataFrame(open[item])
+            # display(pandas)
+            path = f'C:/Users/safa6/git/python/Python_crawling/dart_api/excel/{folder_name}'
+            check_folder = os.path.isdir(path)
+            if not check_folder:
+                os.makedirs(path)
+            pandas.to_excel(f'{path}/{file_name}.xlsx',
+                            sheet_name='Sheet1',
+                            )
+
+    def option():
+        print('아직 미구현')
 
 
 
