@@ -5,6 +5,7 @@ import json
 import re
 from bs4 import BeautifulSoup as bs
 from html_table_parser import parser_functions as parser
+from IPython.display import display
 
 
 def date(number):
@@ -20,11 +21,11 @@ def date(number):
         start_month = '10'
         end_month = '11'
     if number == '4':
-        year = int(year)+1
+        year = int(year) + 1
         start_month = '01'
         end_month = '03'
     if end_month.find('0') == -1:
-        last_day = calendar.monthrange(year , int(end_month))[1]
+        last_day = calendar.monthrange(year, int(end_month))[1]
     else:
         last_day = calendar.monthrange(year, int(end_month.split('0')[1]))[1]
     begin = str(year) + start_month + '01'
@@ -37,8 +38,8 @@ def company_code(code, number):
     for item in date(number):
         date_li.append(item)
     print(date_li)  # 들어가는 날짜
-    key = 'key입력칸'
-    type = 'A'  # B , C , D 타입에 따라 결과값 다름,즉 추가코딩 하여야함
+    key = '키 입력란'
+    type = 'A'  # B , C , D 타입에 따라 추가코딩 하여야함
     list = []
     for arr in code:
         url = f"https://opendart.fss.or.kr/api/list.json?crtfc_key={key}&corp_code={arr}&bgn_de={date_li[0]}" \
@@ -53,17 +54,12 @@ def company_code(code, number):
             print("message : 조회된 데이타가 없습니다.")
             continue
         lis = list.append(li['list'][0]['rcept_no'])
-        # for arr in lis:
-        #     if arr['rm'] == '연':
-        #         continue
-        #     else:
-        #         list.append(arr['rcept_no'])
     return list
 
 
 def open_dart(code, number):
     ttr = {}
-    for index,it in enumerate(company_code(code, number)):
+    for index, it in enumerate(company_code(code, number)):
         url = 'http://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + it
         html = requests.get(url).text
         title = bs(requests.get(url).text, 'html.parser').find('title')
@@ -74,17 +70,28 @@ def open_dart(code, number):
         re_title = result.select('html > body > table')[2].select_one('tbody > tr > td > p').text
         # print('re_title ==== ' , re_title)
         if re_title == '연결 손익계산서':
-            tbody = str(result).split('연결 손익계산서')[1] # 2번째 테이블을 뽑게끔 바꿀것
+            tbody = str(result).split('연결 손익계산서')[1]  # 2번째 테이블을 뽑게끔 바꿀것
         if re_title == '연결 포괄손익계산서':
             tbody = str(result).split('연결 포괄손익계산서')[1]
         body = bs(tbody, 'html.parser')
+        # header_table 과 table을 나누어서 구현할것인지 생각해볼것
+        # header_table  :  ['', '제 52 기 1분기', '제 52 기 1분기', '제 51 기 1분기', '제 51 기 1분기'] ['', '3개월', '누적', '3개월', '누적']
         tr = body.find('table')
         table = parser.make2d(tr)
-        ttr['a'+str(index)] = title.text.split('/')[0].replace('\n', '') + '_' + number + '분기'
-        # ttr['a'+str(index)] = title.text.replace('/', '_').replace('\n', '')
-        ttr['b'+str(index)] = table
+        ttr['a' + str(index)] = title.text.split('/')[0].replace('\n', '') + '_' + number + '분기'
+        ttr['b' + str(index)] = data_set(table)
     return ttr
 
+
+def data_set(make2d_tr_table):
+    want = ['수익(매출액)', '영업이익' , '영업이익(손실)' , '당기순이익(손실)']
+    # want2 = ['수익(매출액)',  ]
+    want_table = []
+    for idx , item in enumerate(make2d_tr_table):
+        print(item[0])
+        if bool(item[0] in want):
+            want_table.append(make2d_tr_table[idx])
+    return want_table
 
 # if __name__ == "__main__":
 #     # open_dart(code)
