@@ -27,20 +27,22 @@ def save_stock_value(open):
             display(pandas)
             path = f'C:/Users/safa6/git/python/Python_crawling/dart_api/excel/{folder_name}'
             check_folder = os.path.isdir(path)
+            writer = pd.ExcelWriter(f'{path}/{folder_name}.xlsx')
             if not check_folder:
                 os.makedirs(path)
             if not os.path.isfile(path=f'{path}/{folder_name}.xlsx'):
-                pandas.to_excel(f'{path}/{folder_name}.xlsx',
-                                sheet_name=sheet_name,
-                                )
-            else:
-                # with...as = open & close 를 처리해준다  연달아 호출할 경우 저장이 안되는경우를 해결해 줌
-                # with pd.ExcelWriter(f'{path}/{folder_name}.xlsx', mode='a') as writer:
-                writer = pd.ExcelWriter(f'{path}/{folder_name}.xlsx', mode='a')
-                pandas.to_excel(writer, sheet_name=sheet_name)
+                pandas.to_excel(writer,
+                                sheet_name=sheet_name)
                 writer.close()
-
-
+            else:
+                writer = pd.ExcelWriter(f'{path}/{folder_name}.xlsx', mode='a')
+                if sheet_name in excel.load_workbook(f'{path}/{folder_name}.xlsx').sheetnames:
+                    continue
+                else:
+                    pandas.to_excel(writer, sheet_name=sheet_name)
+                    writer.close()
+            # with...as = open & close 를 처리해준다  연달아 호출할 경우 저장이 안되는경우를 해결해 줌
+            # with pd.ExcelWriter(f'{path}/{folder_name}.xlsx', mode='a') as writer:
 
 
 def option():
