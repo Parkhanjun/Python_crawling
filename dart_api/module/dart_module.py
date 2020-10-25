@@ -38,7 +38,7 @@ def company_code(code, number):
     for item in date(number):
         date_li.append(item)
     print(date_li)  # 들어가는 날짜
-    key = '키 입력란'
+    key = ''
     type = 'A'  # B , C , D 타입에 따라 추가코딩 하여야함
     list = []
     for arr in code:
@@ -67,15 +67,12 @@ def open_dart(code, number):
         rurl = f'http://dart.fss.or.kr/report/viewer.do?rcpNo={split[0]}&dcmNo={split[1]}&eleId={split[2]}&offset={split[3]}&length={split[4]}&dtd={split[5]}'
         print(rurl)
         result = bs(requests.get(rurl).text, 'html.parser')
-        re_title = result.select('html > body > table')[2].select_one('tbody > tr > td > p').text
-        # print('re_title ==== ' , re_title)
-        if re_title == '연결 손익계산서':
-            tbody = str(result).split('연결 손익계산서')[1]  # 2번째 테이블을 뽑게끔 바꿀것
-        if re_title == '연결 포괄손익계산서':
-            tbody = str(result).split('연결 포괄손익계산서')[1]
+        re_title = result.select('html > body > table')[2].select_one('tbody > tr > td').findChild().text
+        rt = str(re_title).replace(' ', '')
+        print('re_title ==== ', rt)
+        if rt == '연결손익계산서' or rt == '연결포괄손익계산서':
+            tbody = str(result).split(re_title)[1]
         body = bs(tbody, 'html.parser')
-        # header_table 과 table을 나누어서 구현할것인지 생각해볼것
-        # header_table  :  ['', '제 52 기 1분기', '제 52 기 1분기', '제 51 기 1분기', '제 51 기 1분기'] ['', '3개월', '누적', '3개월', '누적']
         tr = body.find('table')
         table = parser.make2d(tr)
         ttr['a' + str(index)] = title.text.split('/')[0].replace('\n', '') + '_' + number + '분기'
@@ -84,13 +81,12 @@ def open_dart(code, number):
 
 
 def data_set(make2d_tr_table):
-    want = ['수익(매출액)', '영업이익' , '영업이익(손실)' , '당기순이익(손실)']
-    # want2 = ['수익(매출액)',  ]
+    want = ['수익(매출액)', '영업이익', '영업이익(손실)', '당기순이익(손실)', '영업수익']
     want_table = []
-    for idx , item in enumerate(make2d_tr_table):
-        print(item[0])
-        if bool(item[0] in want):
-            want_table.append(make2d_tr_table[idx])
+    for idx, item in enumerate(make2d_tr_table):
+        # if bool(item[0] in want):
+        re.sub('[a-zA-Z0-9()_.+-]', '', item[0]).replace(' ', '')
+        want_table.append(make2d_tr_table[idx])
     return want_table
 
 # if __name__ == "__main__":
