@@ -11,4 +11,6 @@
 <div>
 <img src='https://user-images.githubusercontent.com/42140057/98386441-847d0800-2093-11eb-8d86-8c9571cb1886.png'>
 </div>
+
+Developer SNUBIAN PARK
 ---------------------
