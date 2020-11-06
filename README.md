@@ -9,7 +9,7 @@
 ```
 [Dar api 인증키 받는주소] https://opendart.fss.or.kr/uat/uia/egovLoginUsr.do 에서 인증키를 신청하세요
 
-오픈 api 이용현환에서 신청한 키를 확인하세요 <본인의 키를 공유하지마세요!>
+오픈 api 이용현환에서 신청한 키를 확인하세요 <발급받은 인증키를 공유하지마세요!>
 ```
 
 <br>
