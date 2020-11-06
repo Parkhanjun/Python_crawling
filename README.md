@@ -6,7 +6,9 @@
 
 1. Dart api 인증키 신청하기 
 
-      [Dar api 인증키 받는주소] https://opendart.fss.or.kr/uat/uia/egovLoginUsr.do 에서 인증키를 신청하세요
+```
+[Dar api 인증키 받는주소] https://opendart.fss.or.kr/uat/uia/egovLoginUsr.do 에서 인증키를 신청하세요
+```
 
 
 <div>
@@ -14,7 +16,6 @@
 </div>
 
 
-받은 인증키를 Python_crawling/dart_api/module/dart_module.py 내부에 key='' 란에 입력 해 주세요
 
 Developer SNUBIAN PARK
 ---------------------
